@@ -33,4 +33,13 @@ fs.readFile(file, 'utf8', (err, data) => {
 });
 };
 
+const readAndRemove = (id, file) => {
+  fs.readFile(file, 'utf-8', (err, data) => {
+    if (err) console.log(err);
+    const parsedData = JSON.parse(data);
+    let result = parsedData.filter((data) => data.id !== id);
+    writeToFile(file, result);
+  });
+};
+
 module.exports = { readFromFile, writeToFile, readAndAppend };
