@@ -1,6 +1,6 @@
 const router = require('express').Router();
-const uuid = require('./helpers/uuid');
-const utils = require('./helpers/fsUtils');
+const uuid = require('../helpers/uuid');
+const utils = require('../helpers/fsUtils');
 
 // GET "/api/notes" responds with all notes from the database
 router.get('/notes', (req, res) => {
