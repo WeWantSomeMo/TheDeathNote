@@ -2,25 +2,40 @@ const express = require("express");
 const fs = require("fs");
 const path = require("path");
 const uuid = require("uuid");
-
+const utils = require("./helpers/fsUtils")
 const app = express();
 var PORT = process.env.PORT || 3001
 
-
-app.use(express.urlencoded({extended: true}));
 app.use(express.json());
-app.use(express.static("./public"));
+app.use(express.urlencoded({extended: true}));
+app.use(express.static("public"));
+
+// HTML CALLS
+
+app.get("/", function (req, res) {
+    res.sendFile(path.join(__dirname, "/public/index.html"));
+    console.log('ln 18 server.js')
+});
+//call for notes.html
+app.get("/notes", (req, res) => {
+    res.sendFile(path.join(__dirname, "/public/notes.html"));
+});
+
 
 
 // Add new notes to db.json
 app.get("/api/notes", (req, res) => {
-    res.sendFile(path.join(__dirname, "/db/dc.json"))
+    utils.readFromFile("./db/db.json").then(data => res.json(JSON.parse(data)))
 });
-const newNotes = req.body;
-newNotes.id = uuid.v4();
-notes.push(newNotes);
-fs.writeFileSync("./db/db.json", JSON.stringify(notes))
-res.json(notes);
+
+app.post("/api/notes", (req, res) => {
+    const notes = JSON.parse(fs.readFileSync("./db/db.json"))
+    const newNotes = req.body;
+    newNotes.id = uuid.v4();
+    notes.push(newNotes);
+    fs.writeFileSync("./db/db.json", JSON.stringify(notes))
+    res.json(notes);
+});
 
 // Deleting Notes
 app.delete("/api/notes/:id", (req, res) => {
@@ -30,14 +45,7 @@ app.delete("/api/notes/:id", (req, res) => {
     res.json(delNote);
 })
 
-// HTML Calls for index
-app.get("/", function (req, res) {
-    res.sendFile(path.join(__dirname, "/public/index.html"));
-});
-//call for notes.html
-app.get("/notes", function (req, res) {
-    res.sendFile(path.join(__dirname, "/public/notes.html"));
-});
+
 
 // API Listening
 app.listen(3001,() => {
